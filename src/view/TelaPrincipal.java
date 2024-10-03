@@ -51,18 +51,10 @@ public class TelaPrincipal extends JFrame {
             Connection conexao = ConexaoBD.conectar(); // Conecta ao banco
             AlunoDAO alunoDAO = new AlunoDAO(conexao);
 
-            try {
-                List<Aluno> alunos = alunoDAO.listar();
-                // Aqui você pode preencher uma tabela na interface com os dados dos alunos
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            List<Aluno> alunos = alunoDAO.listar();
+            // Aqui você pode preencher uma tabela na interface com os dados dos alunos
             TelaAluno telaAluno = null;
-            try {
-                telaAluno = new TelaAluno();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            telaAluno = new TelaAluno();
             telaAluno.setVisible(true);
 
 
