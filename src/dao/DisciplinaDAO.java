@@ -16,6 +16,10 @@ public class DisciplinaDAO {
 
     // Método para adicionar uma nova disciplina no banco de dados
     public boolean adicionar(Disciplina disciplina) {
+        if (disciplina == null || disciplina.getCodigo() == null || disciplina.getNomeDisciplina() == null) {
+            throw new IllegalArgumentException("Disciplina e seus atributos não podem ser nulos");
+        }
+
         String sql = "INSERT INTO disciplina (codigo_disciplina, nome, carga_horaria, ementa) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -28,7 +32,7 @@ public class DisciplinaDAO {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Erro ao adicionar disciplina: " + e.getMessage());
             return false;
         }
     }
@@ -46,6 +50,7 @@ public class DisciplinaDAO {
                 String nome = rs.getString("nome");
                 int cargaHoraria = rs.getInt("carga_horaria");
                 String ementa = rs.getString("ementa");
+
 
                 Disciplina disciplina = new Disciplina(codigoDisciplina, nome, cargaHoraria, ementa);
                 listaDisciplinas.add(disciplina);
@@ -68,27 +73,26 @@ public class DisciplinaDAO {
             stmt.setString(3, disciplina.getEmenta());
             stmt.setString(4, disciplina.getCodigo());
 
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Erro ao editar disciplina: " + e.getMessage());
             return false;
         }
     }
 
-    // Método para remover uma disciplina do banco de dados
     public boolean remover(String codigoDisciplina) {
         String sql = "DELETE FROM disciplina WHERE codigo_disciplina = ?";
 
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, codigoDisciplina);
-
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Erro ao remover disciplina: " + e.getMessage());
             return false;
         }
     }

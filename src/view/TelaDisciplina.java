@@ -12,58 +12,29 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class TelaDisciplina extends TelaGenerica {
+
     public TelaDisciplina() {
-        super("Disciplina");
-        setTitle("Gerenciar Disciplinas");
-
-        // Layout da tela
-        setLayout(new BorderLayout());
-
-        // Tabela para exibir as disciplinas
-        configurarTabela();
-
-        // Criar a barra de ferramentas
-        JToolBar toolBar = new JToolBar();
-
-        JButton botaoAdicionar = new JButton("Adicionar Disciplina");
-        botaoAdicionar.addActionListener(e -> adicionar());
-
-        JButton botaoEditar = new JButton("Editar Disciplina");
-        botaoEditar.addActionListener(e -> editar());
-
-        JButton botaoRemover = new JButton("Remover Disciplina");
-        botaoRemover.addActionListener(e -> remover());
-
-        JButton botaoAtualizar = new JButton("Atualizar Lista");
-        botaoAtualizar.addActionListener(e -> atualizarTabela());
-
-        toolBar.add(botaoAdicionar);
-        toolBar.add(botaoEditar);
-        toolBar.add(botaoRemover);
-        toolBar.add(botaoAtualizar);
-
-        // Adicionando a barra de ferramentas e a tabela na tela
-        add(toolBar, BorderLayout.NORTH);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        super("Gerenciar Disciplinas");
+        // Configuração adicional específica da disciplina, se houver
     }
 
     @Override
     protected void configurarTabela() {
-        String[] colunas = {"Nome", "Código", "Carga Horária", "Ementa"};
+        String[] colunas = {"Código", "Nome", "Carga Horária", "Ementa"};
         DefaultTableModel modeloTabela = new DefaultTableModel(colunas, 0);
         tabela.setModel(modeloTabela);
     }
 
+    @Override
     protected void adicionar() {
-        // Criar um formulário simples para adicionar disciplina
-        JTextField campoNome = new JTextField();
         JTextField campoCodigo = new JTextField();
+        JTextField campoNome = new JTextField();
         JTextField campoCargaHoraria = new JTextField();
         JTextField campoEmenta = new JTextField();
 
         Object[] formulario = {
-                "Nome:", campoNome,
                 "Código:", campoCodigo,
+                "Nome:", campoNome,
                 "Carga Horária:", campoCargaHoraria,
                 "Ementa:", campoEmenta
         };
@@ -74,8 +45,8 @@ public class TelaDisciplina extends TelaGenerica {
             try (Connection conexao = ConexaoBD.conectar()) {
                 DisciplinaDAO disciplinaDAO = new DisciplinaDAO(conexao);
                 Disciplina novaDisciplina = new Disciplina(
-                        campoNome.getText(),
                         campoCodigo.getText(),
+                        campoNome.getText(),
                         Integer.parseInt(campoCargaHoraria.getText()),
                         campoEmenta.getText()
                 );
@@ -83,7 +54,7 @@ public class TelaDisciplina extends TelaGenerica {
                 boolean sucesso = disciplinaDAO.adicionar(novaDisciplina);
                 if (sucesso) {
                     JOptionPane.showMessageDialog(this, "Disciplina adicionada com sucesso!");
-                    atualizarTabela(); // Atualiza a tabela após adicionar
+                    atualizarTabela();
                 } else {
                     JOptionPane.showMessageDialog(this, "Erro ao adicionar disciplina.");
                 }
@@ -100,14 +71,14 @@ public class TelaDisciplina extends TelaGenerica {
         if (linhaSelecionada != -1) {
             DefaultTableModel modeloTabela = (DefaultTableModel) tabela.getModel();
 
-            JTextField campoNome = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 0));
-            JTextField campoCodigo = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 1));
+            JLabel labelCodigo = new JLabel((String) modeloTabela.getValueAt(linhaSelecionada, 0));
+            JTextField campoNome = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 1));
             JTextField campoCargaHoraria = new JTextField(modeloTabela.getValueAt(linhaSelecionada, 2).toString());
             JTextField campoEmenta = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 3));
 
             Object[] formulario = {
+                    "Código:", labelCodigo,
                     "Nome:", campoNome,
-                    "Código:", campoCodigo,
                     "Carga Horária:", campoCargaHoraria,
                     "Ementa:", campoEmenta
             };
@@ -118,8 +89,8 @@ public class TelaDisciplina extends TelaGenerica {
                 try (Connection conexao = ConexaoBD.conectar()) {
                     DisciplinaDAO disciplinaDAO = new DisciplinaDAO(conexao);
                     Disciplina disciplinaEditada = new Disciplina(
+                            labelCodigo.getText(),
                             campoNome.getText(),
-                            campoCodigo.getText(),
                             Integer.parseInt(campoCargaHoraria.getText()),
                             campoEmenta.getText()
                     );
@@ -127,9 +98,14 @@ public class TelaDisciplina extends TelaGenerica {
                     boolean sucesso = disciplinaDAO.editar(disciplinaEditada);
                     if (sucesso) {
                         JOptionPane.showMessageDialog(this, "Disciplina editada com sucesso!");
-                        atualizarTabela(); // Atualiza a tabela após editar
+                        atualizarTabela();
                     } else {
                         JOptionPane.showMessageDialog(this, "Erro ao editar disciplina.");
+                        System.out.println(labelCodigo.getText());
+                        System.out.println(campoNome.getText());
+                        System.out.println(Integer.parseInt(campoCargaHoraria.getText()));
+                                System.out.println(campoEmenta.getText());
+
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -146,7 +122,10 @@ public class TelaDisciplina extends TelaGenerica {
         int linhaSelecionada = tabela.getSelectedRow();
         if (linhaSelecionada != -1) {
             DefaultTableModel modeloTabela = (DefaultTableModel) tabela.getModel();
-            String codigo = (String) modeloTabela.getValueAt(linhaSelecionada, 1); // Código na coluna 1
+            String codigo = (String) modeloTabela.getValueAt(linhaSelecionada, 0);
+
+            // Verifique o valor de "codigo" antes de passar para o DAO
+            System.out.println("Código da disciplina selecionada: " + codigo);
 
             int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja remover a disciplina com código " + codigo + "?", "Remover Disciplina", JOptionPane.YES_NO_OPTION);
             if (confirmacao == JOptionPane.YES_OPTION) {
@@ -164,31 +143,27 @@ public class TelaDisciplina extends TelaGenerica {
                     JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
                 }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma disciplina para remover.");
         }
     }
 
+    @Override
     protected void atualizarTabela() {
-        try {
-            Connection conexao = ConexaoBD.conectar();
+        try (Connection conexao = ConexaoBD.conectar()) {
             DisciplinaDAO disciplinaDAO = new DisciplinaDAO(conexao);
-            List<Disciplina> listaDisciplinas = disciplinaDAO.listar(); // Buscar a lista de disciplinas do DAO
+            List<Disciplina> listaDisciplinas = disciplinaDAO.listar();
 
             DefaultTableModel modeloTabela = (DefaultTableModel) tabela.getModel();
-            modeloTabela.setRowCount(0); // Limpar tabela antes de adicionar novos dados
+            modeloTabela.setRowCount(0); // Limpar a tabela
 
             for (Disciplina disciplina : listaDisciplinas) {
                 Object[] rowData = {
-                        disciplina.getNomeDisciplina(),
                         disciplina.getCodigo(),
+                        disciplina.getNomeDisciplina(),
                         disciplina.getCargaHoraria(),
                         disciplina.getEmenta()
                 };
-                modeloTabela.addRow(rowData); // Adiciona a linha com os dados da disciplina
+                modeloTabela.addRow(rowData); // Adicionar linha
             }
-
-            conexao.close(); // Fecha a conexão após a operação
 
         } catch (SQLException e) {
             e.printStackTrace();

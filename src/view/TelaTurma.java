@@ -12,6 +12,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class TelaTurma extends TelaGenerica {
+
+    private JButton btnAdicionar;
+    private JButton btnEditar;
+    private JButton btnRemover;
+    private JButton btnAtualizar;
+
     public TelaTurma() {
         super("Turma");
         setTitle("Gerenciar Turmas");
@@ -22,28 +28,30 @@ public class TelaTurma extends TelaGenerica {
         // Tabela para exibir as turmas
         configurarTabela();
 
-        // Criar a barra de ferramentas
-        JToolBar toolBar = new JToolBar();
+        // Criar painel de botões
+        JPanel painelBotoes = new JPanel();
+        painelBotoes.setLayout(new FlowLayout());
 
-        JButton botaoAdicionar = new JButton("Adicionar Turma");
-        botaoAdicionar.addActionListener(e -> adicionar());
+        btnAdicionar = new JButton("Adicionar Turma");
+        btnAdicionar.addActionListener(e -> adicionar());
 
-        JButton botaoEditar = new JButton("Editar Turma");
-        botaoEditar.addActionListener(e -> editar());
+        btnEditar = new JButton("Editar Turma");
+        btnEditar.addActionListener(e -> editar());
 
-        JButton botaoRemover = new JButton("Remover Turma");
-        botaoRemover.addActionListener(e -> remover());
+        btnRemover = new JButton("Remover Turma");
+        btnRemover.addActionListener(e -> remover());
 
-        JButton botaoAtualizar = new JButton("Atualizar Lista");
-        botaoAtualizar.addActionListener(e -> atualizarTabela());
+        btnAtualizar = new JButton("Atualizar Lista");
+        btnAtualizar.addActionListener(e -> atualizarTabela());
 
-        toolBar.add(botaoAdicionar);
-        toolBar.add(botaoEditar);
-        toolBar.add(botaoRemover);
-        toolBar.add(botaoAtualizar);
+        // Adicionar os botões ao painel
+        painelBotoes.add(btnAdicionar);
+        painelBotoes.add(btnEditar);
+        painelBotoes.add(btnRemover);
+        painelBotoes.add(btnAtualizar);
 
-        // Adicionando a barra de ferramentas e a tabela na tela
-        add(toolBar, BorderLayout.NORTH);
+        // Adicionar o painel de botões e a tabela na tela
+        add(painelBotoes, BorderLayout.NORTH);
         add(new JScrollPane(tabela), BorderLayout.CENTER);
     }
 
@@ -100,13 +108,14 @@ public class TelaTurma extends TelaGenerica {
         if (linhaSelecionada != -1) {
             DefaultTableModel modeloTabela = (DefaultTableModel) tabela.getModel();
 
-            JTextField campoCodigo = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 0));
+            // Exibir o código em um JLabel
+            JLabel labelCodigo = new JLabel((String) modeloTabela.getValueAt(linhaSelecionada, 0));
             JTextField campoHorario = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 1));
             JTextField campoSala = new JTextField((String) modeloTabela.getValueAt(linhaSelecionada, 2));
             JTextField campoCapacidade = new JTextField(modeloTabela.getValueAt(linhaSelecionada, 3).toString());
 
             Object[] formulario = {
-                    "Código:", campoCodigo,
+                    "Código:", labelCodigo, // Usando JLabel para exibir o código
                     "Horário:", campoHorario,
                     "Sala:", campoSala,
                     "Capacidade:", campoCapacidade
@@ -118,7 +127,7 @@ public class TelaTurma extends TelaGenerica {
                 try (Connection conexao = ConexaoBD.conectar()) {
                     TurmaDAO turmaDAO = new TurmaDAO(conexao);
                     Turma turmaEditada = new Turma(
-                            campoCodigo.getText(),
+                            labelCodigo.getText(), // Mantém o código atual, pois não é editável
                             campoHorario.getText(),
                             campoSala.getText(),
                             Integer.parseInt(campoCapacidade.getText())
@@ -140,6 +149,7 @@ public class TelaTurma extends TelaGenerica {
             JOptionPane.showMessageDialog(this, "Selecione uma turma para editar.");
         }
     }
+
 
     @Override
     protected void remover() {

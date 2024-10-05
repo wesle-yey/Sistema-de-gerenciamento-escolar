@@ -1,15 +1,15 @@
 package src.model;
 
 public class Disciplina {
-    private String nomeDisciplina;
     private String codigo;
+    private String nomeDisciplina;
     private int cargaHoraria;
     private String ementa;
 
     // Construtor
-    public Disciplina(String nomeDisciplina, String codigo, int cargaHoraria, String ementa) {
-        this.nomeDisciplina = nomeDisciplina;
+    public Disciplina(String codigo, String nomeDisciplina, int cargaHoraria, String ementa) {
         this.codigo = codigo;
+        this.nomeDisciplina = nomeDisciplina;
         this.cargaHoraria = cargaHoraria;
         this.ementa = ementa;
     }
