@@ -21,7 +21,6 @@ public class TelaPrincipal extends JFrame {
     private JButton botaoProfessor;
     private JButton botaoTurma;
     private JButton botaoDisciplina;
-    private JPanel panel1;
 
     public TelaPrincipal() {
         // Configurações da janela
@@ -38,8 +37,6 @@ public class TelaPrincipal extends JFrame {
         botaoTurma = new JButton("Turma");
         botaoDisciplina = new JButton("Disciplina");
 
-
-
         // Adicionando botões à tela
         add(botaoAluno);
         add(botaoProfessor);
@@ -52,46 +49,43 @@ public class TelaPrincipal extends JFrame {
             AlunoDAO alunoDAO = new AlunoDAO(conexao);
 
             List<Aluno> alunos = alunoDAO.listar();
-            // Aqui você pode preencher uma tabela na interface com os dados dos alunos
-            TelaAluno telaAluno = null;
-            telaAluno = new TelaAluno();
+            // Abrir a tela de Aluno
+            TelaAluno telaAluno = new TelaAluno();
             telaAluno.setVisible(true);
-
-
         });
-
 
         botaoProfessor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Lógica para abrir lista de Professores
-                JOptionPane.showMessageDialog(null, "Mostrar lista de Professores");
+                // Abrir tela de professores
+                TelaProfessor telaProfessor = new TelaProfessor();
+                telaProfessor.setVisible(true);
             }
         });
 
         botaoTurma.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Lógica para abrir lista de Turmas
-                JOptionPane.showMessageDialog(null, "Mostrar lista de Turmas");
+                // Abrir tela de turmas
+                TelaTurma telaTurma = new TelaTurma();
+                telaTurma.setVisible(true);
             }
         });
 
         botaoDisciplina.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Lógica para abrir lista de Disciplinas
-                JOptionPane.showMessageDialog(null, "Mostrar lista de Disciplinas");
+                // Abrir tela de disciplinas
+                TelaDisciplina telaDisciplina = new TelaDisciplina();
+                telaDisciplina.setVisible(true);
             }
         });
-
-        // Tornar a tela visível
-        setVisible(true);
     }
 
     public static void main(String[] args) {
         Connection con = conectar();
         criarTabelas(con);
+
         // Fechar a conexão quando não for mais necessária
         if (con != null) {
             try {
@@ -100,11 +94,12 @@ public class TelaPrincipal extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            SwingUtilities.invokeLater(() -> new TelaPrincipal());
         }
-    }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
+        // Abrir a tela principal na thread de evento do Swing
+        SwingUtilities.invokeLater(() -> {
+            TelaPrincipal telaPrincipal = new TelaPrincipal();
+            telaPrincipal.setVisible(true);
+        });
     }
 }

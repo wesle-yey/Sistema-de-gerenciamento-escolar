@@ -2,12 +2,12 @@ package src.model;
 
 public class Professor {
     private String nome;
-    private String id;
+    private int id;
     private String especializacao;
     private String departamento;
 
     // Construtor
-    public Professor(String nome, String id, String especializacao, String departamento) {
+    public Professor(String nome, int id, String especializacao, String departamento) {
         this.nome = nome;
         this.id = id;
         this.especializacao = especializacao;
@@ -23,11 +23,11 @@ public class Professor {
         this.nome = nome;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
